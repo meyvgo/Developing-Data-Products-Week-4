@@ -7,3 +7,5 @@ https://meyvgo.shinyapps.io/Births_by_Month_and_Day/
 The application was created with the following files: app.R, ui.R, and server.R
 
 The data is in the folder Data/births
+
+An Rstudio Presenter presentation about the project was created in the Week4ProjectPresentation file.
