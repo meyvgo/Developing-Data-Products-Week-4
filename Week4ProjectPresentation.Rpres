@@ -1,0 +1,100 @@
+Shiny Application: Comparing U.S. Daily Births by Month and Day (Rstudio Presenter Pitch)
+========================================================
+author: Meyvgo
+date: 18 December 2020
+transition: rotate
+
+What the Application Does
+========================================================
+
+**Access the application here: <https://meyvgo.shinyapps.io/Births_by_Month_and_Day/>**
+
+
+In this application, created using the R library "shiny", you **select a month** from a drop-down menu and **a day from that month** using a slider. Then, on separate tabs, you can see:
+- a chart showing how the **average number of births per day for the selected month** compares to the **overall average number of births per day** for the whole data set.  
+- a chart showing how the **average number of births for the selected day** in the selected month compares to the **overall average number of births per day for that month**. 
+
+Server.R Calculations on Input
+========================================================
+<small>**As you change months and days, the application automatically:**
+<br/>
+- changes the maximum value of the slider to the maximum number of days in the selected month.
+- changes the Daily Comparison chart to match the selected month.
+- changes the highlights on both charts to match the selected month and day.
+- changes the text above each chart to summarize the comparison for the selected month and/or day.
+- changes the footnote text below the Daily Comparison chart to display the average daily births for the selected month.
+
+Note the application also contains a Documentation tab that contains detailed instructions about how to use the application and explains where the data came from.</small>
+
+
+Creating the Monthly Comparison Chart
+========================================================
+
+```{r echo=FALSE, eval=TRUE}
+
+library(dplyr) 
+## Read the data from the two data files
+## The data came from here: https://github.com/fivethirtyeight/data/find/master
+b1<-read.csv("Data/births/US_births_1994-2003_CDC_NCHS.csv")
+b2<-read.csv("Data/births/US_births_2000-2014_SSA.csv")
+
+## Since the provided data comes in two sets, create a single data frame
+## There is some overlap in the data; I used the SSA data for the overlap years
+births<-b1
+births<-births %>% filter(year<2000)
+births<-bind_rows(births,b2)
+
+## Figure the average births per day for the whole dataset
+overall_daily_avg<-mean(births$births)
+
+## Get the average birth per day for each month
+## And the percent difference of that average from the overall daily average
+avg_per_month<-births %>% 
+        group_by(month) %>% 
+        summarize(mean=mean(births)) %>%
+        mutate(pct_dif=(mean-overall_daily_avg)/overall_daily_avg*100) 
+
+## Add month_abbrev since we will want to use this in our monthly plot
+avg_per_month$month_abbrev<-as.factor(month.abb)
+
+```
+
+<small>Here's the code to create the chart. "December" is used to represent the dropdown menu input$monthName in the server.R file. The full code for the application is here: <https://github.com/meyvgo/Developing-Data-Products-Week-4>. **The code is evaluated with output displayed on the next slide.**
+
+```{r plot, eval=FALSE}
+## Reorder the data so Jan is the first bar in the plot
+avg_per_month<-avg_per_month %>% arrange(desc(month))
+
+## Set up plot colors; make selected month a different color
+colors<-rep("lavender", 31)
+colors[which(avg_per_month$month_abbrev == substr("December",1,3))]<-"purple"
+        
+barplot(height=avg_per_month$pct_dif, names=avg_per_month$month_abbrev, horiz=TRUE, xlab="Percent", xlim=c(-5,6), col=colors, las=1, main="Percent Difference in Average Daily Births By Month From Overall Average US Daily Births 1994-2014**")
+
+abline(v=0, col="steelblue", lwd=3)
+```
+
+</small> 
+                                 
+The Monthly Comparison Chart
+========================================================
+
+
+
+```{r, echo=FALSE, eval=TRUE, fig.align="center", fig.height=8, fig.width=10}
+
+## Reorder the data so our plot comes out with January as the first bar
+avg_per_month<-avg_per_month %>% arrange(desc(month))
+
+## Set up colors for the graph, making the selected month a different color
+colors<-rep("lavender", 31)
+colors[which(avg_per_month$month_abbrev==substr("December",1,3))]<-"purple"
+        
+barplot(height=avg_per_month$pct_dif, names=avg_per_month$month_abbrev, horiz=TRUE, xlab="Percent", xlim=c(-5,6), col=colors, las=1, main="Percent Difference in Average Daily Births By Month From Overall Average US Daily Births 1994-2014**")
+
+abline(v=0, col="steelblue", lwd=3)
+```
+
+
+
+
