@@ -56,7 +56,9 @@ shinyUI(fluidPage(
                                                                                              "number of daily births for that day from the overall montly average will be stated above the chart."))
                                  ),
                                  br(), br(), "The code for this application is available here:",
-                                 a("https://github.com/fivethirtyeight/data/find/master", href="https://github.com/fivethirtyeight/data/find/master", target="_blank")
+                                 a("https://github.com/meyvgo/Developing-Data-Products-Week-4", href="https://github.com/meyvgo/Developing-Data-Products-Week-4", target="_blank"),
+                                 br(), br(), "A presentation about this application is available here:",
+                                 a("https://meyvgo.github.io/developing-data-products/week4/index.html#/", href="https://meyvgo.github.io/developing-data-products/week4/index.html#/", target="_blank")
                                  )
                                  
             )
